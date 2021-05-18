@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 const mongoose = require('mongoose');
 const {Schema} = mongoose;
@@ -14,6 +14,6 @@ const userSchema = new Schema({
   entry: [entrySchema]
 });
 
-const User = mongoose.model('User', userSchema)
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
