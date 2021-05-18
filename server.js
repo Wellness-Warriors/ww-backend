@@ -68,6 +68,25 @@ app.post('/entry', (req, res) => {
   });
 });
 
+app.delete('/entry/:id', (req,res)=>{
+  const id = req.params.id;
+  const email = req.query.user;
+
+  User.find({email: email},(err,results)=>{
+    let user = results[0];
+    console.log('MyUSER',user);
+    user.entry = user.entry.filter(entry => {
+      console.log('ENTRY',entry);
+      `${entry._id} !== ${id}`;
+    });
+
+    user.save().then((usersData)=> {
+      console.log('usersData',usersData);
+      res.status(200).send(usersData);
+    });
+  });
+});
+
 app.get('/', (req, res) => {
   //test server
   res.status(200).send('hello from root');
@@ -76,15 +95,3 @@ app.get('/', (req, res) => {
 app.get('/zen', getZen);
 
 app.listen(PORT, () => console.log(`server listening on port: ${PORT}`));
-
-// if (databaseResults.length < 1) {
-//   res.status(400).send('user does not exist');
-// } else {
-//   let user = new User({
-//     email: req.body.email,
-//     entry: [{
-//       date: req.body,
-//       emotion: 'fierce',
-//       notes: 'fierce notes'
-//     }]
-//   });
