@@ -50,6 +50,14 @@ app.post('/entry', (req, res) => {
     console.log('mongoos',userData[0]);
 
     if (userData.length < 1) {
+      let newUser = new User({
+        email: req.body.email,
+        entry: [{
+          date: 'date',
+          emotion: 'String',
+          notes: 'String'
+        }]
+      });
       res.status(400).send('user does not exist');
     } else {
       let addEntry = userData[0];
@@ -74,16 +82,18 @@ app.delete('/entry/:id', (req,res)=>{
 
   User.find({email: email},(err,results)=>{
     let user = results[0];
-    console.log('MyUSER',user);
-    user.entry = user.entry.filter(entry => {
-      console.log('ENTRY',entry);
-      `${entry._id} !== ${id}`;
+    user.entry = user.entry.filter(test => {
+      console.log('IDs',test._id);
+      console.log('IDs 2',id);
+      return `${test._id}` !== id;
     });
-
+    // console.log('USER',user);
     user.save().then((usersData)=> {
       console.log('usersData',usersData);
       res.status(200).send(usersData);
     });
+    // const usersData = user.deleteOne( { id } );
+    // res.status(200).send(usersData);
   });
 });
 
@@ -93,5 +103,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/zen', getZen);
+
 
 app.listen(PORT, () => console.log(`server listening on port: ${PORT}`));
