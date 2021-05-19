@@ -53,12 +53,14 @@ app.post('/entry', (req, res) => {
       let newUser = new User({
         email: req.body.email,
         entry: [{
-          date: 'date',
-          emotion: 'String',
-          notes: 'String'
+          date: req.body.entry[0].date,
+          emotion: req.body.entry[0].emotion,
+          notes: req.body.entry[0].notes
         }]
       });
-      res.status(400).send('user does not exist');
+      newUser.save().then(newUserData => {
+        res.status(400).send(newUserData.entry);
+      });
     } else {
       let addEntry = userData[0];
       addEntry.entry.push(
