@@ -29,6 +29,11 @@ const entryOne = new User({
 });
 // entryOne.save();
 
+app.get('/', (req, res) => {
+  //test server
+  res.status(200).send('hello from root');
+});
+
 app.get('/user', (req, res) => {
   User.find((error, databaseResults) => {
     res.send(databaseResults);
@@ -38,16 +43,14 @@ app.get('/user', (req, res) => {
 app.get('/entry', (req, res) => {
 
   User.find({ email: req.query.email }, (err, databaseResults) => {
-    console.log(databaseResults);
     res.status(200).send(databaseResults);
   });
 });
 
 app.post('/entry', (req, res) => {
-  console.log('this is the request', req.body);
+  console.log('POST REQ', req.body);
 
   User.find({ email: req.body.email }, (err, userData) => {
-    console.log('mongoos',userData[0]);
 
     if (userData.length < 1) {
       let newUser = new User({
@@ -58,7 +61,10 @@ app.post('/entry', (req, res) => {
           notes: 'String'
         }]
       });
-      res.status(400).send('user does not exist');
+      newUser.save().then(newUserData => {
+        console.log('newUserData',newUserData);
+        res.status(200).send(newUserData.entry);
+      });
     } else {
       let addEntry = userData[0];
       addEntry.entry.push(
@@ -68,10 +74,9 @@ app.post('/entry', (req, res) => {
           notes: req.body.entry[0].notes
         }
       );
-      addEntry.save().then(dataResult => {
-        console.log('dataResults:',dataResult.entry);
-        res.send(dataResult.entry);});
-
+      addEntry.save().then(addEntryResults => {
+        console.log('dataResults:',addEntryResults);
+        res.status(200).send(addEntryResults.entry);});
     }
   });
 });
@@ -80,29 +85,21 @@ app.delete('/entry/:id', (req,res)=>{
   const id = req.params.id;
   const email = req.query.user;
 
-  User.find({email: email},(err,results)=>{
-    let user = results[0];
+  User.find({email: email},(err,userData)=>{
+    let user = userData[0];
     user.entry = user.entry.filter(test => {
-      console.log('IDs',test._id);
-      console.log('IDs 2',id);
+      console.log('test._id',test._id);
+      console.log('id',id);
       return `${test._id}` !== id;
     });
-    // console.log('USER',user);
-    user.save().then((usersData)=> {
-      console.log('usersData',usersData);
-      res.status(200).send(usersData);
+    user.save().then((usersData) => {
+      console.log(usersData);
+      res.status(200).send(usersData.entry);
     });
-    // const usersData = user.deleteOne( { id } );
-    // res.status(200).send(usersData);
+
   });
 });
 
-app.get('/', (req, res) => {
-  //test server
-  res.status(200).send('hello from root');
-});
-
 app.get('/zen', getZen);
-
 
 app.listen(PORT, () => console.log(`server listening on port: ${PORT}`));
