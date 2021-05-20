@@ -48,7 +48,6 @@ app.get('/entry', (req, res) => {
 });
 
 app.post('/entry', (req, res) => {
-  console.log('POST REQ', req.body);
 
   User.find({ email: req.body.email }, (err, userData) => {
 
@@ -56,9 +55,9 @@ app.post('/entry', (req, res) => {
       let newUser = new User({
         email: req.body.email,
         entry: [{
-          date: 'date',
-          emotion: 'String',
-          notes: 'String'
+          date: req.body.entry[0].date,
+          emotion: req.body.entry[0],
+          notes: req.body.entry[0].notes
         }]
       });
       newUser.save().then(newUserData => {
