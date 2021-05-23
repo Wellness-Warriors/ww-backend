@@ -4,6 +4,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+// weird that you have one handler in a different file, but not the rest of them... very inconsistent.
 const getZen = require('./handlers/zen');
 const app = express();
 app.use(cors());
@@ -14,8 +15,8 @@ const PORT = process.env.PORT || 3001;
 mongoose.connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const User = require('./models/User');
-// eslint-disable-next-line no-unused-vars
-const { res } = require('express');
+// why did you disable this warning instead of just deleting the line?
+
 // eslint-disable-next-line no-unused-vars
 const entryOne = new User({
   email: 'shelby.harner@gmail.com',
@@ -56,7 +57,7 @@ app.post('/entry', (req, res) => {
         email: req.body.email,
         entry: [{
           date: req.body.entry[0].date,
-          emotion: req.body.entry[0],
+          emotion: req.body.entry[0], // emotion still not being saved correctly the first time
           notes: req.body.entry[0].notes
         }]
       });
@@ -87,6 +88,7 @@ app.delete('/entry/:id', (req,res)=>{
   User.find({email: email},(err,userData)=>{
     let user = userData[0];
     user.entry = user.entry.filter(test => {
+      // leftover console logs
       console.log('test._id',test._id);
       console.log('id',id);
       return `${test._id}` !== id;
